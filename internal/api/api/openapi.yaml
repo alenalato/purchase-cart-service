@@ -1,0 +1,193 @@
+openapi: 3.0.0
+info:
+  description: Purchase Cart API is an API to create an order with items and get the
+    pricing information for the order
+  title: Purchase Cart API
+  version: "1.0"
+servers:
+- url: http://localhost:9090/api
+tags:
+- description: APIs for managing Purchase Cart
+  name: Purchase Cart
+paths:
+  /v1/order:
+    post:
+      description: This endpoint will accept requests with items information and return
+        pricing information for the new order
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: "Successful response, the created order with pricing information"
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: "Bad request, some required fields are missing or some validation\
+            \ failed"
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: "Internal server error, something went wrong on the server\
+            \ side"
+      tags:
+      - Purchase Cart
+components:
+  schemas:
+    CreateOrderRequest:
+      description: The request to create an order
+      example:
+        order:
+          items:
+          - product_id: 1
+            quantity: 1
+          - product_id: 2
+            quantity: 5
+          - product_id: 3
+            quantity: 1
+      properties:
+        order:
+          $ref: '#/components/schemas/CreateOrderRequest_order'
+      required:
+      - order
+      type: object
+    Error:
+      example:
+        code: code
+        message: message
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+      - code
+      - message
+      type: object
+    Order:
+      example:
+        order_vat: 1.25
+        order_price: 12.5
+        order_id: 3412433
+        items:
+        - product_id: 1
+          quantity: 1
+          price: 2.0
+          vat: 0.2
+        - product_id: 2
+          quantity: 5
+          price: 7.5
+          vat: 0.75
+        - product_id: 3
+          quantity: 1
+          price: 3.0
+          vat: 0.3
+      properties:
+        order_id:
+          description: The ID of the order
+          example: 3412433
+          format: int64
+          type: integer
+        order_price:
+          description: The total price for the order
+          example: 12.5
+          format: float
+          type: number
+        order_vat:
+          description: The total VAT for the order
+          example: 1.25
+          format: float
+          type: number
+        items:
+          description: The items in the order
+          example:
+          - product_id: 1
+            quantity: 1
+            price: 2.0
+            vat: 0.2
+          - product_id: 2
+            quantity: 5
+            price: 7.5
+            vat: 0.75
+          - product_id: 3
+            quantity: 1
+            price: 3.0
+            vat: 0.3
+          items:
+            $ref: '#/components/schemas/OrderItem'
+          type: array
+      type: object
+    OrderItem:
+      properties:
+        product_id:
+          description: The ID of the product
+          example: 1
+          format: int32
+          type: integer
+        quantity:
+          description: The quantity of the product
+          example: 1
+          format: int32
+          type: integer
+        price:
+          description: The price of the product
+          example: 2.0
+          format: float
+          type: number
+        vat:
+          description: The VAT of the product
+          example: 0.2
+          format: float
+          type: number
+      type: object
+    CreateOrderRequest_order_items_inner:
+      properties:
+        product_id:
+          example: 1
+          format: int32
+          type: integer
+        quantity:
+          example: 1
+          format: int32
+          type: integer
+      required:
+      - product_id
+      - quantity
+      type: object
+    CreateOrderRequest_order:
+      description: The order payload to create an order
+      example:
+        items:
+        - product_id: 1
+          quantity: 1
+        - product_id: 2
+          quantity: 5
+        - product_id: 3
+          quantity: 1
+      properties:
+        items:
+          description: The items to purchase
+          example:
+          - product_id: 1
+            quantity: 1
+          - product_id: 2
+            quantity: 5
+          - product_id: 3
+            quantity: 1
+          items:
+            $ref: '#/components/schemas/CreateOrderRequest_order_items_inner'
+          type: array
+      required:
+      - items
+      type: object

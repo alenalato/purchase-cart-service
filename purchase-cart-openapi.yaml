@@ -1,0 +1,150 @@
+openapi: 3.0.0
+info:
+  title: Purchase Cart API
+  version: '1.0'
+  description : Purchase Cart API is an API to create an order with items and get the pricing information for the order
+servers:
+  - url: 'http://localhost:9090/api'
+paths:
+  "/v1/order":
+    post:
+      tags:
+        - Purchase Cart
+      description: This endpoint will accept requests with items information and return pricing information for the new order
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+        required: true
+      responses:
+        '201':
+            description: Successful response, the created order with pricing information
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Order'
+        '400':
+            description: Bad request, some required fields are missing or some validation failed
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Error'
+        '500':
+            description: Internal server error, something went wrong on the server side
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    CreateOrderRequest:
+      description: The request to create an order
+      type: object
+      required:
+        - order
+      properties:
+        order:
+          description: The order payload to create an order
+          type: object
+          required:
+            - items
+          properties:
+            items:
+              description: The items to purchase
+              type: array
+              items:
+                type: object
+                required:
+                  - product_id
+                  - quantity
+                properties:
+                  product_id:
+                    type: integer
+                    format: int32
+                    example: 1
+                  quantity:
+                    type: integer
+                    format: int32
+                    example: 1
+              example:
+                - product_id: 1
+                  quantity: 1
+                - product_id: 2
+                  quantity: 5
+                - product_id: 3
+                  quantity: 1
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+        - code
+        - message
+    Order:
+      type: object
+      properties:
+        order_id:
+          description: The ID of the order
+          type: integer
+          format: int64
+          example: 3412433
+        order_price:
+          description: The total price for the order
+          type: number
+          format: float
+          example: 12.50
+        order_vat:
+          description: The total VAT for the order
+          type: number
+          format: float
+          example: 1.25
+        items:
+          description: The items in the order
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+          example:
+            - product_id: 1
+              quantity: 1
+              price: 2.00
+              vat: 0.20
+            - product_id: 2
+              quantity: 5
+              price: 7.50
+              vat: 0.75
+            - product_id: 3
+              quantity: 1
+              price: 3.00
+              vat: 0.30
+    OrderItem:
+      type: object
+      properties:
+        product_id:
+          description: The ID of the product
+          type: integer
+          format: int32
+          example: 1
+        quantity:
+          description: The quantity of the product
+          type: integer
+          format: int32
+          example: 1
+        price:
+          description: The price of the product
+          type: number
+          format: float
+          example: 2.00
+        vat:
+          description: The VAT of the product
+          type: number
+          format: float
+          example: 0.20
+
+tags:
+    - name: Purchase Cart
+      description: APIs for managing Purchase Cart
