@@ -77,9 +77,9 @@ components:
       type: object
     Order:
       example:
-        order_vat: 1.25
-        order_price: 12.5
-        order_id: 3412433
+        total_vat: 1.25
+        total_price: 12.5
+        id: "3412433"
         items:
         - product_id: 1
           quantity: 1
@@ -94,17 +94,16 @@ components:
           price: 3.0
           vat: 0.3
       properties:
-        order_id:
+        id:
           description: The ID of the order
-          example: 3412433
-          format: int64
-          type: integer
-        order_price:
+          example: "3412433"
+          type: string
+        total_price:
           description: The total price for the order
           example: 12.5
           format: float
           type: number
-        order_vat:
+        total_vat:
           description: The total VAT for the order
           example: 1.25
           format: float

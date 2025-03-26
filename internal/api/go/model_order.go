@@ -13,13 +13,13 @@ package api
 type Order struct {
 
 	// The ID of the order
-	OrderId int64 `json:"order_id,omitempty"`
+	Id string `json:"id,omitempty"`
 
 	// The total price for the order
-	OrderPrice float32 `json:"order_price,omitempty"`
+	TotalPrice float32 `json:"total_price,omitempty"`
 
 	// The total VAT for the order
-	OrderVat float32 `json:"order_vat,omitempty"`
+	TotalVat float32 `json:"total_vat,omitempty"`
 
 	// The items in the order
 	Items []OrderItem `json:"items,omitempty"`

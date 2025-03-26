@@ -88,17 +88,16 @@ components:
     Order:
       type: object
       properties:
-        order_id:
+        id:
           description: The ID of the order
-          type: integer
-          format: int64
+          type: string
           example: 3412433
-        order_price:
+        total_price:
           description: The total price for the order
           type: number
           format: float
           example: 12.50
-        order_vat:
+        total_vat:
           description: The total VAT for the order
           type: number
           format: float

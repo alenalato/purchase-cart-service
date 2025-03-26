@@ -1,3 +1,7 @@
 #!/bin/sh
 
-exec HTTP_LISTEN_HOST=0.0.0.0 HTTP_LISTEN_PORT=9090 server
+CONFIG_DIR="$(pwd)"
+
+export CONFIG_DIR
+
+exec .build/server
