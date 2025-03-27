@@ -6,9 +6,13 @@ import (
 	"github.com/alenalato/purchase-cart-service/internal/storage"
 )
 
+//go:generate mockgen -destination=converter_mock.go -package=order github.com/alenalato/purchase-cart-service/internal/bizlogic/order modelConverter
+
 // modelConverter is an interface for converting between storage and bizlogic models
 type modelConverter interface {
+	// fromModelOrderDetailsToStorage converts a bizlogic.OrderDetails to a storage.OrderDetails
 	fromModelOrderDetailsToStorage(ctx context.Context, order bizlogic.OrderDetails) storage.OrderDetails
+	// fromStorageOrderToModel converts a storage.Order to a bizlogic.Order
 	fromStorageOrderToModel(ctx context.Context, order *storage.Order) *bizlogic.Order
 }
 
@@ -17,7 +21,6 @@ type storageModelConverter struct {
 
 var _ modelConverter = new(storageModelConverter)
 
-// fromModelOrderDetailsToStorage converts a bizlogic.OrderDetails to a storage.OrderDetails
 func (c *storageModelConverter) fromModelOrderDetailsToStorage(
 	_ context.Context,
 	order bizlogic.OrderDetails,
@@ -35,7 +38,6 @@ func (c *storageModelConverter) fromModelOrderDetailsToStorage(
 	}
 }
 
-// fromStorageOrderToModel converts a storage.Order to a bizlogic.Order
 func (c *storageModelConverter) fromStorageOrderToModel(_ context.Context, order *storage.Order) *bizlogic.Order {
 	items := make([]bizlogic.OrderItem, len(order.Items))
 	for i, item := range order.Items {

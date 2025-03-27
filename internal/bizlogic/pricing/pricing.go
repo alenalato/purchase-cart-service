@@ -19,9 +19,9 @@ type Logic struct {
 var _ bizlogic.PricingManager = new(Logic)
 
 // NewLogic creates a new pricing logic
-func NewLogic(vaManager VatManager, pricingStorage storage.PricingStorage) *Logic {
+func NewLogic(vatManager VatManager, pricingStorage storage.PricingStorage) *Logic {
 	return &Logic{
-		vatManager:     vaManager,
+		vatManager:     vatManager,
 		pricingStorage: pricingStorage,
 	}
 }

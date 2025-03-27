@@ -11,7 +11,7 @@ import (
 	"github.com/thoas/go-funk"
 )
 
-func (l *Logic) GetItemsPrices(ctx context.Context, items []bizlogic.ItemDetails) ([]bizlogic.ItemPrice, error) {
+func (l *Logic) GetItemsPrices(ctx context.Context, items []bizlogic.OrderDetailsItem) ([]bizlogic.ItemPrice, error) {
 	// validate input
 	validateErrs := make([]error, 0)
 	for _, item := range items {

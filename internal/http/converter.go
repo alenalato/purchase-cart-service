@@ -7,9 +7,13 @@ import (
 	"github.com/alenalato/purchase-cart-service/internal/bizlogic"
 )
 
+//go:generate mockgen -destination=converter_mock.go -package=http github.com/alenalato/purchase-cart-service/internal/http modelConverter
+
 // modelConverter is an interface for converting between API and bizlogic models
 type modelConverter interface {
+	// fromApiCreateOrderRequestToModel converts an API CreateOrderRequest to a bizlogic.OrderDetails
 	fromModelOrderToApi(ctx context.Context, order *bizlogic.Order) (api.Order, error)
+	// fromModelOrderToApi converts a bizlogic.Order to an api.Order
 	fromApiCreateOrderRequestToModel(ctx context.Context, req api.CreateOrderRequest) bizlogic.OrderDetails
 }
 
@@ -19,12 +23,11 @@ type apiModelConverter struct {
 
 var _ modelConverter = new(apiModelConverter)
 
-// fromApiCreateOrderRequestToModel converts an API CreateOrderRequest to a bizlogic.OrderDetails
 func (c *apiModelConverter) fromApiCreateOrderRequestToModel(_ context.Context, req api.CreateOrderRequest) bizlogic.OrderDetails {
-	items := make([]bizlogic.ItemDetails, len(req.Order.Items))
+	items := make([]bizlogic.OrderDetailsItem, len(req.Order.Items))
 
 	for i, item := range req.Order.Items {
-		items[i] = bizlogic.ItemDetails{
+		items[i] = bizlogic.OrderDetailsItem{
 			ProductId: int(item.ProductId),
 			Quantity:  int(item.Quantity),
 		}
@@ -35,7 +38,6 @@ func (c *apiModelConverter) fromApiCreateOrderRequestToModel(_ context.Context, 
 	}
 }
 
-// fromModelOrderToApi converts a bizlogic.Order to an api.Order
 func (c *apiModelConverter) fromModelOrderToApi(_ context.Context, order *bizlogic.Order) (api.Order, error) {
 	items := make([]api.OrderItem, len(order.Items))
 

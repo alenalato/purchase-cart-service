@@ -17,21 +17,26 @@ type MongoDB struct {
 
 var _ storage.OrderStorage = new(MongoDB)
 
+// Close closes the MongoDB connection
 func (m *MongoDB) Close(ctx context.Context) error {
 	return m.client.Disconnect(ctx)
 }
 
+// GetDataBase returns the inner MongoDB database
 func (m *MongoDB) GetDataBase() *mongo.Database {
 	return m.database
 }
 
+// NewMongoDB creates a new MongoDB storage
 func NewMongoDB(uri string, databaseName string) (*MongoDB, error) {
-	client, clientErr := NewMongoDBClient(uri)
+	clientOptions := options.Client().ApplyURI(uri)
+	client, clientErr := mongo.Connect(clientOptions)
 	if clientErr != nil {
 		return nil, clientErr
 	}
 	database := client.Database(databaseName)
 
+	// Create unique index for product price
 	_, indexErr := database.Collection(ProductPriceCollection).Indexes().CreateOne(
 		context.Background(),
 		mongo.IndexModel{
@@ -49,14 +54,4 @@ func NewMongoDB(uri string, databaseName string) (*MongoDB, error) {
 		client:   client,
 		database: database,
 	}, nil
-}
-
-func NewMongoDBClient(uri string) (*mongo.Client, error) {
-	clientOptions := options.Client().ApplyURI(uri)
-	client, clientErr := mongo.Connect(clientOptions)
-	if clientErr != nil {
-		return nil, clientErr
-	}
-
-	return client, nil
 }

@@ -9,6 +9,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/thoas/go-funk v0.9.3
 	go.mongodb.org/mongo-driver/v2 v2.1.0
+	go.uber.org/mock v0.5.0
 	go.uber.org/zap v1.27.0
 )
 

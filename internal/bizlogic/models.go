@@ -4,15 +4,15 @@ import (
 	"github.com/govalues/decimal"
 )
 
-// ItemDetails represents the details of an item in an order to be created
-type ItemDetails struct {
+// OrderDetailsItem represents the details of an item in an order to be created
+type OrderDetailsItem struct {
 	ProductId int `validate:"required,gt=0"`
 	Quantity  int `validate:"required,gt=0"`
 }
 
 // OrderDetails represents the details of an order to be created
 type OrderDetails struct {
-	Items []ItemDetails `validate:"required,dive"`
+	Items []OrderDetailsItem `validate:"required,dive"`
 }
 
 // ItemPrice represents the price and VAT of an item

@@ -1,0 +1,150 @@
+package order
+
+import (
+	"context"
+	"github.com/alenalato/purchase-cart-service/internal/bizlogic"
+	"github.com/alenalato/purchase-cart-service/internal/storage"
+	"github.com/govalues/decimal"
+	"reflect"
+	"testing"
+)
+
+func Test_newStorageModelConverter(t *testing.T) {
+	tests := []struct {
+		name string
+		want *storageModelConverter
+	}{
+		{
+			name: "Test newStorageModelConverter",
+			want: &storageModelConverter{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := newStorageModelConverter(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("newStorageModelConverter() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_storageModelConverter_fromModelOrderDetailsToStorage(t *testing.T) {
+	type args struct {
+		in0   context.Context
+		order bizlogic.OrderDetails
+	}
+	tests := []struct {
+		name string
+		args args
+		want storage.OrderDetails
+	}{
+		{
+			name: "Test fromModelOrderDetailsToStorage",
+			args: args{
+				in0: context.Background(),
+				order: bizlogic.OrderDetails{
+					Items: []bizlogic.OrderDetailsItem{
+						{
+							ProductId: 1,
+							Quantity:  2,
+						},
+						{
+							ProductId: 3,
+							Quantity:  4,
+						},
+					},
+				},
+			},
+			want: storage.OrderDetails{
+				Items: []storage.OrderDetailsItem{
+					{
+						ProductId: 1,
+						Quantity:  2,
+					},
+					{
+						ProductId: 3,
+						Quantity:  4,
+					},
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := &storageModelConverter{}
+			if got := c.fromModelOrderDetailsToStorage(tt.args.in0, tt.args.order); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("fromModelOrderDetailsToStorage() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_storageModelConverter_fromStorageOrderToModel(t *testing.T) {
+	type args struct {
+		in0   context.Context
+		order *storage.Order
+	}
+	asDecimal := func(value float64) decimal.Decimal {
+		dv, _ := decimal.NewFromFloat64(value)
+
+		return dv
+	}
+	tests := []struct {
+		name string
+		args args
+		want *bizlogic.Order
+	}{
+		{
+			name: "Test fromStorageOrderToModel",
+			args: args{
+				in0: context.Background(),
+				order: &storage.Order{
+					Id:         "1",
+					TotalPrice: asDecimal(2),
+					TotalVat:   asDecimal(3),
+					Items: []storage.OrderItem{
+						{
+							ProductId: 4,
+							Quantity:  5,
+							Price:     asDecimal(6),
+							Vat:       asDecimal(7),
+						},
+						{
+							ProductId: 8,
+							Quantity:  9,
+							Price:     asDecimal(10),
+							Vat:       asDecimal(11),
+						},
+					},
+				},
+			},
+			want: &bizlogic.Order{
+				Id:         "1",
+				TotalPrice: asDecimal(2),
+				TotalVat:   asDecimal(3),
+				Items: []bizlogic.OrderItem{
+					{
+						ProductId: 4,
+						Quantity:  5,
+						Price:     asDecimal(6),
+						Vat:       asDecimal(7),
+					},
+					{
+						ProductId: 8,
+						Quantity:  9,
+						Price:     asDecimal(10),
+						Vat:       asDecimal(11),
+					},
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := &storageModelConverter{}
+			if got := c.fromStorageOrderToModel(tt.args.in0, tt.args.order); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("fromStorageOrderToModel() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
