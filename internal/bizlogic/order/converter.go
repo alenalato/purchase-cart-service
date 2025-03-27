@@ -6,6 +6,7 @@ import (
 	"github.com/alenalato/purchase-cart-service/internal/storage"
 )
 
+// modelConverter is an interface for converting between storage and bizlogic models
 type modelConverter interface {
 	fromModelOrderDetailsToStorage(ctx context.Context, order bizlogic.OrderDetails) storage.OrderDetails
 	fromStorageOrderToModel(ctx context.Context, order *storage.Order) *bizlogic.Order
@@ -16,7 +17,11 @@ type storageModelConverter struct {
 
 var _ modelConverter = new(storageModelConverter)
 
-func (c *storageModelConverter) fromModelOrderDetailsToStorage(_ context.Context, order bizlogic.OrderDetails) storage.OrderDetails {
+// fromModelOrderDetailsToStorage converts a bizlogic.OrderDetails to a storage.OrderDetails
+func (c *storageModelConverter) fromModelOrderDetailsToStorage(
+	_ context.Context,
+	order bizlogic.OrderDetails,
+) storage.OrderDetails {
 	items := make([]storage.OrderDetailsItem, len(order.Items))
 	for i, item := range order.Items {
 		items[i] = storage.OrderDetailsItem{
@@ -30,6 +35,7 @@ func (c *storageModelConverter) fromModelOrderDetailsToStorage(_ context.Context
 	}
 }
 
+// fromStorageOrderToModel converts a storage.Order to a bizlogic.Order
 func (c *storageModelConverter) fromStorageOrderToModel(_ context.Context, order *storage.Order) *bizlogic.Order {
 	items := make([]bizlogic.OrderItem, len(order.Items))
 	for i, item := range order.Items {
@@ -49,6 +55,7 @@ func (c *storageModelConverter) fromStorageOrderToModel(_ context.Context, order
 	}
 }
 
+// newStorageModelConverter creates a new storageModelConverter
 func newStorageModelConverter() *storageModelConverter {
 	return &storageModelConverter{}
 }

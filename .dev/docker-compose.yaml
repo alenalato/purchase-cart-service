@@ -1,0 +1,19 @@
+services:
+  mytest:
+    env_file: ../.env
+    build:
+      context: ../
+      tags:
+        - mytest
+    volumes:
+      - ..:/mnt
+    ports:
+      - "9090:9090"
+    working_dir: /mnt
+
+  mongo:
+    image: mongo:4.4
+    volumes:
+      - ./data/mongo:/data/db
+    ports:
+      - "27017:27017"

@@ -34,6 +34,12 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: "Bad request, some required fields are missing or some validation\
             \ failed"
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: "Unprocessable entity, some field is not processable"
         "500":
           content:
             application/json:

@@ -7,6 +7,7 @@ import (
 	"github.com/alenalato/purchase-cart-service/internal/bizlogic"
 )
 
+// modelConverter is an interface for converting between API and bizlogic models
 type modelConverter interface {
 	fromModelOrderToApi(ctx context.Context, order *bizlogic.Order) (api.Order, error)
 	fromApiCreateOrderRequestToModel(ctx context.Context, req api.CreateOrderRequest) bizlogic.OrderDetails
@@ -18,6 +19,7 @@ type apiModelConverter struct {
 
 var _ modelConverter = new(apiModelConverter)
 
+// fromApiCreateOrderRequestToModel converts an API CreateOrderRequest to a bizlogic.OrderDetails
 func (c *apiModelConverter) fromApiCreateOrderRequestToModel(_ context.Context, req api.CreateOrderRequest) bizlogic.OrderDetails {
 	items := make([]bizlogic.ItemDetails, len(req.Order.Items))
 
@@ -33,6 +35,7 @@ func (c *apiModelConverter) fromApiCreateOrderRequestToModel(_ context.Context, 
 	}
 }
 
+// fromModelOrderToApi converts a bizlogic.Order to an api.Order
 func (c *apiModelConverter) fromModelOrderToApi(_ context.Context, order *bizlogic.Order) (api.Order, error) {
 	items := make([]api.OrderItem, len(order.Items))
 
@@ -71,6 +74,7 @@ func (c *apiModelConverter) fromModelOrderToApi(_ context.Context, order *bizlog
 	}, nil
 }
 
+// newApiModelConverter creates a new apiModelConverter
 func newApiModelConverter(apiFloatPrecision int) *apiModelConverter {
 	return &apiModelConverter{apiFloatPrecision}
 }

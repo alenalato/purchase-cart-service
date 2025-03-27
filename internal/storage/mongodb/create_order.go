@@ -2,8 +2,11 @@ package mongodb
 
 import (
 	"context"
+	"github.com/alenalato/purchase-cart-service/internal/common"
+	"github.com/alenalato/purchase-cart-service/internal/logger"
 	"github.com/alenalato/purchase-cart-service/internal/storage"
 	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 	"time"
 )
 
@@ -15,6 +18,13 @@ func (m *MongoDB) CreateOrder(ctx context.Context, orderDetails storage.OrderDet
 
 	insertRes, insertErr := collection.InsertOne(insertCtx, orderDetails)
 	if insertErr != nil {
+		if mongo.IsDuplicateKeyError(insertErr) {
+			insertErr = common.NewError(insertErr, common.ErrTypeAlreadyExists)
+		} else {
+			insertErr = common.NewError(insertErr, common.ErrTypeInternal)
+		}
+		logger.Log.Errorf("Error creating order: %s", insertErr.Error())
+
 		return nil, insertErr
 	}
 
@@ -26,7 +36,9 @@ func (m *MongoDB) CreateOrder(ctx context.Context, orderDetails storage.OrderDet
 	var order storage.Order
 	findErr := collection.FindOne(findCtx, filter).Decode(&order)
 	if findErr != nil {
-		return nil, findErr
+		logger.Log.Errorf("Error creating order: %s", findErr.Error())
+
+		return nil, common.NewError(findErr, common.ErrTypeInternal)
 	}
 	order.Id = insertRes.InsertedID.(bson.ObjectID).Hex()
 

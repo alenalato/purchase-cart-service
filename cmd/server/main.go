@@ -71,6 +71,7 @@ func main() {
 
 	closeServer := make(chan struct{})
 
+	// start HTTP server
 	go func() {
 		if srvErr := srv.ListenAndServe(); !errors.Is(srvErr, http.ErrServerClosed) {
 			logger.Log.Errorf("could not listen HTTP(%s): %v", httpAddress, srvErr)
@@ -78,6 +79,7 @@ func main() {
 		}
 	}()
 
+	// handle shutdown signals
 	go func() {
 		sigint := make(chan os.Signal, 1)
 		signal.Notify(sigint, syscall.SIGTERM, os.Interrupt)
@@ -85,7 +87,7 @@ func main() {
 		close(closeServer)
 	}()
 
-	logger.Log.Infof("http server initialized on %s", httpAddress)
+	logger.Log.Infof("http server initialized, listening on %s", httpAddress)
 
 	<-closeServer
 

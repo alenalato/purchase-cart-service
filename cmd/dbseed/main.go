@@ -39,6 +39,8 @@ func main() {
 		}
 	}(mongoDbStorage, ctx)
 
+	logger.Log.Infof("seeding product prices")
+
 	insertCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
@@ -78,4 +80,6 @@ func main() {
 	if seedErr != nil {
 		logger.Log.Errorf("could not seed product prices: %v", seedErr)
 	}
+
+	logger.Log.Infof("seeding completed")
 }
