@@ -4,7 +4,7 @@ import (
 	"context"
 	api "github.com/alenalato/purchase-cart-service/internal/api/go"
 	"github.com/alenalato/purchase-cart-service/internal/bizlogic"
-	"github.com/govalues/decimal"
+	"github.com/alenalato/purchase-cart-service/internal/common"
 	"reflect"
 	"testing"
 )
@@ -24,7 +24,7 @@ func Test_apiModelConverter_fromApiCreateOrderRequestToModel(t *testing.T) {
 		want   bizlogic.OrderDetails
 	}{
 		{
-			name: "Test fromApiCreateOrderRequestToModel",
+			name: "fromApiCreateOrderRequestToModel",
 			fields: fields{
 				apiFloatPrecision: 2,
 			},
@@ -79,11 +79,6 @@ func Test_apiModelConverter_fromModelOrderToApi(t *testing.T) {
 		in0   context.Context
 		order *bizlogic.Order
 	}
-	asDecimal := func(value float64) decimal.Decimal {
-		dv, _ := decimal.NewFromFloat64(value)
-
-		return dv
-	}
 	tests := []struct {
 		name    string
 		fields  fields
@@ -92,7 +87,7 @@ func Test_apiModelConverter_fromModelOrderToApi(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "Test fromModelOrderToApi success",
+			name: "fromModelOrderToApi success",
 			fields: fields{
 				apiFloatPrecision: 2,
 			},
@@ -100,20 +95,20 @@ func Test_apiModelConverter_fromModelOrderToApi(t *testing.T) {
 				in0: context.Background(),
 				order: &bizlogic.Order{
 					Id:         "1",
-					TotalPrice: asDecimal(2.222),
-					TotalVat:   asDecimal(1.111),
+					TotalPrice: common.AsDecimal(2.222),
+					TotalVat:   common.AsDecimal(1.111),
 					Items: []bizlogic.OrderItem{
 						{
 							ProductId: 1,
 							Quantity:  2,
-							Price:     asDecimal(2.5555),
-							Vat:       asDecimal(1.1111),
+							Price:     common.AsDecimal(2.5555),
+							Vat:       common.AsDecimal(1.1111),
 						},
 						{
 							ProductId: 3,
 							Quantity:  4,
-							Price:     asDecimal(4.4444),
-							Vat:       asDecimal(2.99999),
+							Price:     common.AsDecimal(4.4444),
+							Vat:       common.AsDecimal(2.99999),
 						},
 					},
 				},
@@ -167,7 +162,7 @@ func Test_newApiModelConverter(t *testing.T) {
 		want *apiModelConverter
 	}{
 		{
-			name: "Test newApiModelConverter",
+			name: "newApiModelConverter",
 			args: args{
 				apiFloatPrecision: 5,
 			},

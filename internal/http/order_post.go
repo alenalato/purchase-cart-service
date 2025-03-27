@@ -49,12 +49,12 @@ func (s *PurchaseCartAPIService) V1OrderPost(
 	}
 
 	// convert order to response
-	res, convertErr := s.converter.fromModelOrderToApi(ctx, order)
+	resBody, convertErr := s.converter.fromModelOrderToApi(ctx, order)
 	if convertErr != nil {
 		return api.Response(500, api.Error{
 			Code: errorCodeInternal.String(),
 		}), nil
 	}
 
-	return api.Response(201, res), nil
+	return api.Response(201, resBody), nil
 }

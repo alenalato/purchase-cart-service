@@ -3,8 +3,8 @@ package order
 import (
 	"context"
 	"github.com/alenalato/purchase-cart-service/internal/bizlogic"
+	"github.com/alenalato/purchase-cart-service/internal/common"
 	"github.com/alenalato/purchase-cart-service/internal/storage"
-	"github.com/govalues/decimal"
 	"reflect"
 	"testing"
 )
@@ -15,7 +15,7 @@ func Test_newStorageModelConverter(t *testing.T) {
 		want *storageModelConverter
 	}{
 		{
-			name: "Test newStorageModelConverter",
+			name: "newStorageModelConverter",
 			want: &storageModelConverter{},
 		},
 	}
@@ -39,7 +39,7 @@ func Test_storageModelConverter_fromModelOrderDetailsToStorage(t *testing.T) {
 		want storage.OrderDetails
 	}{
 		{
-			name: "Test fromModelOrderDetailsToStorage",
+			name: "fromModelOrderDetailsToStorage",
 			args: args{
 				in0: context.Background(),
 				order: bizlogic.OrderDetails{
@@ -84,56 +84,51 @@ func Test_storageModelConverter_fromStorageOrderToModel(t *testing.T) {
 		in0   context.Context
 		order *storage.Order
 	}
-	asDecimal := func(value float64) decimal.Decimal {
-		dv, _ := decimal.NewFromFloat64(value)
-
-		return dv
-	}
 	tests := []struct {
 		name string
 		args args
 		want *bizlogic.Order
 	}{
 		{
-			name: "Test fromStorageOrderToModel",
+			name: "fromStorageOrderToModel",
 			args: args{
 				in0: context.Background(),
 				order: &storage.Order{
 					Id:         "1",
-					TotalPrice: asDecimal(2),
-					TotalVat:   asDecimal(3),
+					TotalPrice: common.AsDecimal(2),
+					TotalVat:   common.AsDecimal(3),
 					Items: []storage.OrderItem{
 						{
 							ProductId: 4,
 							Quantity:  5,
-							Price:     asDecimal(6),
-							Vat:       asDecimal(7),
+							Price:     common.AsDecimal(6),
+							Vat:       common.AsDecimal(7),
 						},
 						{
 							ProductId: 8,
 							Quantity:  9,
-							Price:     asDecimal(10),
-							Vat:       asDecimal(11),
+							Price:     common.AsDecimal(10),
+							Vat:       common.AsDecimal(11),
 						},
 					},
 				},
 			},
 			want: &bizlogic.Order{
 				Id:         "1",
-				TotalPrice: asDecimal(2),
-				TotalVat:   asDecimal(3),
+				TotalPrice: common.AsDecimal(2),
+				TotalVat:   common.AsDecimal(3),
 				Items: []bizlogic.OrderItem{
 					{
 						ProductId: 4,
 						Quantity:  5,
-						Price:     asDecimal(6),
-						Vat:       asDecimal(7),
+						Price:     common.AsDecimal(6),
+						Vat:       common.AsDecimal(7),
 					},
 					{
 						ProductId: 8,
 						Quantity:  9,
-						Price:     asDecimal(10),
-						Vat:       asDecimal(11),
+						Price:     common.AsDecimal(10),
+						Vat:       common.AsDecimal(11),
 					},
 				},
 			},

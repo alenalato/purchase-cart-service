@@ -5,6 +5,7 @@ import (
 	"github.com/alenalato/purchase-cart-service/internal/storage"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
+	"os"
 )
 
 const ProductPriceCollection = "product-price"
@@ -27,12 +28,14 @@ func (m *MongoDB) GetDataBase() *mongo.Database {
 	return m.database
 }
 
-// NewMongoDB creates a new MongoDB storage
-func NewMongoDB(uri string, databaseName string) (*MongoDB, error) {
-	clientOptions := options.Client().ApplyURI(uri)
-	client, clientErr := mongo.Connect(clientOptions)
-	if clientErr != nil {
-		return nil, clientErr
+// NewMongoDB creates a new MongoDB storage. If client is nil, it creates a new client using the MONGODB_URI environment variable
+func NewMongoDB(client *mongo.Client, databaseName string) (*MongoDB, error) {
+	if client == nil {
+		var newClientErr error
+		client, newClientErr = newMongoDBClient(os.Getenv("MONGODB_URI"))
+		if newClientErr != nil {
+			return nil, newClientErr
+		}
 	}
 	database := client.Database(databaseName)
 
@@ -54,4 +57,10 @@ func NewMongoDB(uri string, databaseName string) (*MongoDB, error) {
 		client:   client,
 		database: database,
 	}, nil
+}
+
+func newMongoDBClient(uri string) (*mongo.Client, error) {
+	clientOptions := options.Client().ApplyURI(uri)
+
+	return mongo.Connect(clientOptions)
 }

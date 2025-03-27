@@ -1,12 +1,12 @@
+name: purchase-cart
 services:
   mytest:
-    env_file: ../.env
     build:
       context: ../
-      tags:
-        - mytest
     volumes:
       - ..:/mnt
+      - ~/go/pkg:/go/pkg # TODO: remove
+      - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "9090:9090"
     working_dir: /mnt
@@ -16,4 +16,4 @@ services:
     volumes:
       - ./data/mongo:/data/db
     ports:
-      - "27017:27017"
+      - "27017:27017" # TODO: remove

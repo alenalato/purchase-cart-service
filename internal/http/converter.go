@@ -5,6 +5,7 @@ import (
 	"errors"
 	api "github.com/alenalato/purchase-cart-service/internal/api/go"
 	"github.com/alenalato/purchase-cart-service/internal/bizlogic"
+	"github.com/alenalato/purchase-cart-service/internal/common"
 )
 
 //go:generate mockgen -destination=converter_mock.go -package=http github.com/alenalato/purchase-cart-service/internal/http modelConverter
@@ -44,11 +45,17 @@ func (c *apiModelConverter) fromModelOrderToApi(_ context.Context, order *bizlog
 	for i, item := range order.Items {
 		itemPrice, ok := item.Price.Round(c.apiFloatPrecision).Float64()
 		if !ok {
-			return api.Order{}, errors.New("could not convert item price to float")
+			return api.Order{}, common.NewError(
+				errors.New("could not convert item price to float"),
+				common.ErrTypeInternal,
+			)
 		}
 		itemVat, ok := item.Vat.Round(c.apiFloatPrecision).Float64()
 		if !ok {
-			return api.Order{}, errors.New("could not convert item vat to float")
+			return api.Order{}, common.NewError(
+				errors.New("could not convert item vat to float"),
+				common.ErrTypeInternal,
+			)
 		}
 
 		items[i] = api.OrderItem{
@@ -61,11 +68,17 @@ func (c *apiModelConverter) fromModelOrderToApi(_ context.Context, order *bizlog
 
 	totalPrice, ok := order.TotalPrice.Round(c.apiFloatPrecision).Float64()
 	if !ok {
-		return api.Order{}, errors.New("could not convert order total price to float")
+		return api.Order{}, common.NewError(
+			errors.New("could not convert order total price to float"),
+			common.ErrTypeInternal,
+		)
 	}
 	totalVat, ok := order.TotalVat.Round(c.apiFloatPrecision).Float64()
 	if !ok {
-		return api.Order{}, errors.New("could not convert order total vat to float")
+		return api.Order{}, common.NewError(
+			errors.New("could not convert order total vat to float"),
+			common.ErrTypeInternal,
+		)
 	}
 
 	return api.Order{

@@ -38,7 +38,7 @@ func main() {
 	ctx := context.Background()
 
 	mongoDbStorage, mongodbErr := mongodb.NewMongoDB(
-		os.Getenv("MONGODB_URI"),
+		nil,
 		os.Getenv("MONGODB_DATABASE"),
 	)
 	if mongodbErr != nil {

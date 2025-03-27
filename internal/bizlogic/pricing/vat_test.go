@@ -2,6 +2,7 @@ package pricing
 
 import (
 	"context"
+	"github.com/alenalato/purchase-cart-service/internal/common"
 	"github.com/govalues/decimal"
 	"math"
 	"reflect"
@@ -18,11 +19,6 @@ func TestFixedVat_CalculateVat(t *testing.T) {
 		amount decimal.Decimal
 		in3    interface{}
 	}
-	asDecimal := func(value float64) decimal.Decimal {
-		dv, _ := decimal.NewFromFloat64(value)
-
-		return dv
-	}
 	tests := []struct {
 		name    string
 		fields  fields
@@ -31,17 +27,17 @@ func TestFixedVat_CalculateVat(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "Test CalculateVat success",
+			name: "CalculateVat success",
 			fields: fields{
-				fixedRate: asDecimal(20),
+				fixedRate: common.AsDecimal(20),
 			},
 			args: args{
 				in0:    context.Background(),
 				in1:    1,
-				amount: asDecimal(100),
+				amount: common.AsDecimal(100),
 				in3:    nil,
 			},
-			want:    asDecimal(20),
+			want:    common.AsDecimal(20),
 			wantErr: false,
 		},
 	}
@@ -66,11 +62,6 @@ func TestNewFixedVat(t *testing.T) {
 	type args struct {
 		rate float64
 	}
-	asDecimal := func(value float64) decimal.Decimal {
-		dv, _ := decimal.NewFromFloat64(value)
-
-		return dv
-	}
 	tests := []struct {
 		name    string
 		args    args
@@ -78,17 +69,17 @@ func TestNewFixedVat(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "Test NewFixedVat success",
+			name: "NewFixedVat success",
 			args: args{
 				rate: 20,
 			},
 			want: &FixedVat{
-				fixedRate: asDecimal(20),
+				fixedRate: common.AsDecimal(20),
 			},
 			wantErr: false,
 		},
 		{
-			name: "Test NewFixedVat error",
+			name: "NewFixedVat error",
 			args: args{
 				rate: math.Inf(1),
 			},

@@ -3,10 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/alenalato/purchase-cart-service/internal/common"
 	"github.com/alenalato/purchase-cart-service/internal/logger"
 	"github.com/alenalato/purchase-cart-service/internal/storage"
 	"github.com/alenalato/purchase-cart-service/internal/storage/mongodb"
-	"github.com/govalues/decimal"
 	"github.com/joho/godotenv"
 	"go.uber.org/zap"
 	"os"
@@ -26,7 +26,7 @@ func main() {
 	ctx := context.Background()
 
 	mongoDbStorage, mongodbErr := mongodb.NewMongoDB(
-		os.Getenv("MONGODB_URI"),
+		nil,
 		os.Getenv("MONGODB_DATABASE"),
 	)
 	if mongodbErr != nil {
@@ -44,31 +44,25 @@ func main() {
 	insertCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
-	asDecimal := func(value float64) decimal.Decimal {
-		dv, _ := decimal.NewFromFloat64(value)
-
-		return dv
-	}
-
 	productPrices := []interface{}{
 		storage.ProductPrice{
 			ProductId: 1,
-			Price:     asDecimal(2),
+			Price:     common.AsDecimal(2),
 			VatClass:  1,
 		},
 		storage.ProductPrice{
 			ProductId: 2,
-			Price:     asDecimal(1.5),
+			Price:     common.AsDecimal(1.5),
 			VatClass:  1,
 		},
 		storage.ProductPrice{
 			ProductId: 3,
-			Price:     asDecimal(3),
+			Price:     common.AsDecimal(3),
 			VatClass:  1,
 		},
 		storage.ProductPrice{
 			ProductId: 4,
-			Price:     asDecimal(1.2),
+			Price:     common.AsDecimal(1.2),
 			VatClass:  1,
 		},
 	}

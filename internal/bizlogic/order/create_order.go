@@ -22,17 +22,12 @@ func (l *Logic) CreateOrder(ctx context.Context, details bizlogic.OrderDetails) 
 	if pricesErr != nil {
 		return nil, pricesErr
 	}
-	if len(itemsPrices) != len(details.Items) {
-		err := errors.New("prices count mismatch")
-		logger.Log.Error(err)
-
-		return nil, common.NewError(err, common.ErrTypeInternal)
-	}
 
 	// prepare storage order details
 	storageOrderDetails := l.converter.fromModelOrderDetailsToStorage(ctx, details)
-	if len(storageOrderDetails.Items) != len(details.Items) {
-		err := errors.New("items count mismatch")
+
+	if len(storageOrderDetails.Items) != len(itemsPrices) {
+		err := errors.New("items/prices count mismatch")
 		logger.Log.Error(err)
 
 		return nil, common.NewError(err, common.ErrTypeInternal)

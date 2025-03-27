@@ -8,25 +8,31 @@ import (
 )
 
 type testSuite struct {
-	service            *PurchaseCartAPIService
-	mockedOrderManager *bizlogic.MockOrderManager
-	mockConverter      *MockmodelConverter
-	mockCtrl           *gomock.Controller
+	purchaseCartService *PurchaseCartAPIService
+	mockedOrderManager  *bizlogic.MockOrderManager
+	mockedConverter     *MockmodelConverter
+	mockCtrl            *gomock.Controller
 }
 
 func getTestSuite(t *testing.T) *testSuite {
 	mockCtrl := gomock.NewController(t)
+	mockedOrderManager := bizlogic.NewMockOrderManager(mockCtrl)
+	mockedConverter := NewMockmodelConverter(mockCtrl)
+	purchaseCartService := NewPurchaseCartAPIService(mockedOrderManager)
+	purchaseCartService.converter = mockedConverter
 
 	return &testSuite{
-		service:            NewPurchaseCartAPIService(bizlogic.NewMockOrderManager(mockCtrl)),
-		mockedOrderManager: bizlogic.NewMockOrderManager(mockCtrl),
-		mockConverter:      NewMockmodelConverter(mockCtrl),
-		mockCtrl:           mockCtrl,
+		purchaseCartService: purchaseCartService,
+		mockedOrderManager:  mockedOrderManager,
+		mockedConverter:     mockedConverter,
+		mockCtrl:            mockCtrl,
 	}
 }
 
 func TestNewPurchaseCartAPIService(t *testing.T) {
 	tSuite := getTestSuite(t)
+	defer tSuite.mockCtrl.Finish()
+
 	type args struct {
 		orderManager bizlogic.OrderManager
 	}
@@ -36,7 +42,7 @@ func TestNewPurchaseCartAPIService(t *testing.T) {
 		want *PurchaseCartAPIService
 	}{
 		{
-			name: "Test NewPurchaseCartAPIService",
+			name: "NewPurchaseCartAPIService",
 			args: args{
 				orderManager: tSuite.mockedOrderManager,
 			},

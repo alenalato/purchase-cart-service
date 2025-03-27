@@ -16,17 +16,23 @@ type testSuite struct {
 
 func getTestSuite(t *testing.T) *testSuite {
 	mockCtrl := gomock.NewController(t)
+	mockedVatManager := NewMockVatManager(mockCtrl)
+	mockedPricingStorage := storage.NewMockPricingStorage(mockCtrl)
+	logic := NewLogic(mockedVatManager, mockedPricingStorage)
+	logic.vatManager = mockedVatManager
 
 	return &testSuite{
-		logic:                NewLogic(NewMockVatManager(mockCtrl), storage.NewMockPricingStorage(mockCtrl)),
-		mockedVatManager:     NewMockVatManager(mockCtrl),
-		mockedPricingStorage: storage.NewMockPricingStorage(mockCtrl),
+		logic:                logic,
+		mockedVatManager:     mockedVatManager,
+		mockedPricingStorage: mockedPricingStorage,
 		mockCtrl:             mockCtrl,
 	}
 }
 
 func TestNewLogic(t *testing.T) {
 	tSuite := getTestSuite(t)
+	defer tSuite.mockCtrl.Finish()
+
 	type args struct {
 		vatManager     VatManager
 		pricingStorage storage.PricingStorage
@@ -37,7 +43,7 @@ func TestNewLogic(t *testing.T) {
 		want *Logic
 	}{
 		{
-			name: "Test NewLogic",
+			name: "NewLogic",
 			args: args{
 				vatManager:     tSuite.mockedVatManager,
 				pricingStorage: tSuite.mockedPricingStorage,
